@@ -3,9 +3,10 @@
  * @param {import('../infraestructure/MongoContactsRepository')} obj.ContactsRepository
  */
  module.exports = ({ AccountRepository }) => {
-    return async ({ account, entity, money }) => { // parameters
+    return async ({ account, name, entity, money }) => { // parameters
       const newAccount = {
         account: account,
+        name: name,
         entity: entity,
         money: money
       }

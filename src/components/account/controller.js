@@ -7,6 +7,7 @@ const addMoney = require('./application/addMoney')
 const desembolsarMoney = require('./application/desembolsarMoney')
 const transferMoney = require('./application/transferMoney')
 const getByEntity= require('./application/getByEntity')
+const getAllMoney= require('./application/getAllMoney')
 
 const AccountRepository = new MongoAccountRepository()
 
@@ -115,6 +116,24 @@ const getAccountByEntity = async (req, res, next) => {
   }
 }
 
+const getAllMoneyFromEntity = async (req, res, next) => {
+  try {
+    const query = getAllMoney({ AccountRepository })
+    const contact = await query(req.params)
+
+    var AllMoney = contact.reduce(function(prev, cur) {
+      return prev + cur.money;
+    }, 0);
+
+    res.status(200).json({
+      data: AllMoney,
+      message: 'All money of your accounts'
+    })
+  } catch (e) {
+    next(e)
+  }
+}
+
 
 module.exports = {
   newAccount,
@@ -124,5 +143,6 @@ module.exports = {
   addMoneyToAccount,
   DesembolsarMoneyToAccount,
   transferMoneyToAccount,
-  getAccountByEntity
+  getAccountByEntity,
+  getAllMoneyFromEntity
 }

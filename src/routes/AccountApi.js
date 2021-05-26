@@ -8,7 +8,8 @@ const {
     addMoneyToAccount,
     DesembolsarMoneyToAccount,
     transferMoneyToAccount,
-    getAccountByEntity
+    getAccountByEntity,
+    getAllMoneyFromEntity
   } = require('../components/account/controller')
   
 router.get(
@@ -51,6 +52,11 @@ router.put(
 router.get(
     '/api/accounts/:id',
     getAccountByEntity
+)
+
+router.get(
+    '/api/accounts/allMoney/:id',
+    getAllMoneyFromEntity
 )
 module.exports = router
 
