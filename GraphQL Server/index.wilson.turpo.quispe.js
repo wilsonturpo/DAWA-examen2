@@ -2,95 +2,85 @@ const { ApolloServer, gql } = require('apollo-server')
 const { v4: uuid } = require('uuid')
 const axios = require('axios');
 
-const url="https://rickandmortyapi.com/api/character"
+const url="http://localhost:3001"
 
-var charactersArray = []
+var accountsArray = []
 
 const typeDefs = gql`
-  enum CharacterStatus {
-    Alive
-    Dead
-    unknown
-  }
-  type Character {
+  type Entity{
     id: ID!
     name: String!
-    status: CharacterStatus!
-    species: String!
-    gender: String!
-    episode: [String!]!
-    url: String!
+  }
+  type Account {
+    id: ID!
+    account: String!
+    name: String!
+    entity: String!
+    money: Int!
+  }
+  type AllMoney{
+    data: Int!
+    message: String!
   }
   type Mutation {
-    "Agrega un nuevo Character"
-    addCharacter(
-      id: ID!
-      name: String!
-      status: CharacterStatus!
-      species: String!
-      gender: String!
-      episode: [String!]!
-      url: String!
-    ): Character
+    "Tranferir dinero a otra cuenta"
+    tranferMoney: String!
   }
   type Query {
-    characters: [Character!]!
-    character(id:ID!): Character!
-    characterByStatus(status:CharacterStatus!): [Character!]!
+    allMoneyOfEntity(id: ID!): AllMoney!
+    account(id:ID!): Account!
   }
 `
 
 const resolvers = {
   Query: {
-    characters: () => getAllCharacters(),
-    character: (root, args)=> {
+
+    allMoneyOfEntity: (root, args) =>{
       const { id } = args
-      return getOneCharacter(id)
+      return getAllMoney(id)
     },
-    characterByStatus: (root, args)=>{
-      const { status } = args
-      return getCharacterByStatus(status)
+
+    account: (root, args)=> {
+      const { id } = args
+      return getOneAccount(id)
     }
   },
   Mutation: {
-    addCharacter: async (root, args) =>{
-      charactersArray = await getAllCharacters()
+    tranferMoney: async (root, args) =>{
+      const { idOrigin } = args
+      const { idDestiny } = args
+      const { money } = args
 
-      const newCharacter = {
-        id: uuid(),
-        name: args.name,
-        status: args.status,
-        species: args.species,
-        gender: args.gender,
-        episode: args.episode,
-        url: args.url
-      }
-
-      const characterArrayLast = [...charactersArray, newCharacter]
-      console.log(characterArrayLast)
-      return newCharacter
+      const result =  transferirDinero(idOrigin, idDestiny, money)
+      return result
     }
-  }
+  } 
 }
 
-//Método que obtiene todos los Characters
-const getAllCharacters = async ()=>{
-    const { data } = await axios(url)
-    return data.results
-}
-
-//Método que obtiene un Character por su ID
-const getOneCharacter = async (id)=>{
-  const  {data}  = await axios(`${url}/${id}`)
-  return data
-}
-
-//Método que obtiene un Character por su estado a partir del enum
-const getCharacterByStatus = async (status) =>{
-  const  {data}  = await axios(`${url}/?status=${status}`)
+//Método que obtiene todo el dinero de una entidad
+const getAllMoney = async (id)=>{
+  const { data } = await axios(`http://localhost:3001/api/accounts/allMoney/${id}`)
   return data.results
 }
 
+//Método que obtiene una cuenta por su ID
+const getOneAccount = async (id)=>{
+  const  {data}  = await axios(`http://localhost:3001/api/accounts/${id}`)
+  return data
+}
+
+//Método que transfiere dinero
+const transferirDinero = async (idOrigin, idDestiny, money)=>{
+  const  {data}  = await axios(`http://localhost:3001/api/accounts/transfer`, 
+                  { params: 
+                    { 
+                      idOrigin, 
+                      idDestiny, 
+                      money }
+                    })
+
+  return data
+}
 
 const server = new ApolloServer({
   typeDefs,

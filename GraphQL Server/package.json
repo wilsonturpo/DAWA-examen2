@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start.wilson.turpo.quispe": "node index.wilson.turpo.quispe.js",
-    "dev.wilson.turpo.quispe": "nodemon index.wilson.turpo.quispe.js"
+    "start": "node index.wilson.turpo.quispe.js",
+    "dev": "nodemon index.wilson.turpo.quispe.js"
   },
   "keywords": [],
   "author": "",
